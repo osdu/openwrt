@@ -226,7 +226,7 @@ menu "Target Images"
 	config GRUB_TIMEOUT
 		string "Seconds to wait before booting the default entry"
 		depends on GRUB_IMAGES
-		default "5"
+		default "0"
 		help
 		  If you don't know, 5 seconds is a reasonable default.
 
@@ -243,6 +243,7 @@ menu "Target Images"
 		select GRUB_IMAGES
 		select TARGET_IMAGES_PAD
 		select PACKAGE_kmod-e1000
+		default y
 
 	config TARGET_IMAGES_PAD
 		bool "Pad images to filesystem size (for JFFS2)"
@@ -260,12 +261,12 @@ menu "Target Images"
 	config TARGET_KERNEL_PARTSIZE
 		int "Kernel partition size (in MB)"
 		depends on GRUB_IMAGES || USES_BOOT_PART
-		default 16
+		default 64
 
 	config TARGET_ROOTFS_PARTSIZE
 		int "Root filesystem partition size (in MB)"
 		depends on GRUB_IMAGES || USES_ROOTFS_PART || TARGET_ROOTFS_EXT4FS || TARGET_rb532 || TARGET_mvebu || TARGET_uml
-		default 256
+		default 512
 		help
 		  Select the root filesystem partition size.
 

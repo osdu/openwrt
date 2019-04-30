@@ -10,7 +10,7 @@ menu "Global build settings"
 	config ALL_NONSHARED
 		bool "Select all target specific packages by default"
 		select ALL_KMODS
-		default BUILDBOT
+		default y
 
 	config ALL_KMODS
 		bool "Select all kernel module packages by default"
