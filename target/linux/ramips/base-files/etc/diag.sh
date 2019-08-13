@@ -9,6 +9,10 @@ get_status_led() {
 	boardname="${board##*,}"
 
 	case $board in
+	xyc2|\
+	xyc1)
+		status_led="xy:green:system"
+		;;
 	3g150b|\
 	3g300m|\
 	w150m)
