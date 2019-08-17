@@ -49,10 +49,11 @@ PACKAGE_INSTALL_FILES:= \
 $(curdir)/cleanup: $(TMP_DIR)/.build
 	rm -rf $(STAGING_DIR_ROOT)
 
+SNAIL_FEED_SUBDIRS=$(foreach SUBDIR_NAME,luci themes,$(OUTPUT_DIR)/packages/$(ARCH_PACKAGES)/snail/$(SUBDIR_NAME))
 $(curdir)/merge:
 	rm -rf $(PACKAGE_DIR_ALL)
 	mkdir -p $(PACKAGE_DIR_ALL)
-	-$(foreach pdir,$(PACKAGE_SUBDIRS),$(if $(wildcard $(pdir)/*.ipk),ln -s $(pdir)/*.ipk $(PACKAGE_DIR_ALL);))
+	-$(foreach pdir,$(PACKAGE_SUBDIRS) $(SNAIL_FEED_SUBDIRS),$(if $(wildcard $(pdir)/*.ipk),ln -s $(pdir)/*.ipk $(PACKAGE_DIR_ALL);))
 
 $(curdir)/merge-index: $(curdir)/merge
 	(cd $(PACKAGE_DIR_ALL) && $(SCRIPT_DIR)/ipkg-make-index.sh . 2>&1 > Packages; )
@@ -66,7 +67,7 @@ $(curdir)/install: $(TMP_DIR)/.build $(curdir)/merge $(if $(CONFIG_TARGET_PER_DE
 	rm -rf $(TARGET_DIR) $(TARGET_DIR_ORIG)
 	mkdir -p $(TARGET_DIR)/tmp
 	$(call opkg,$(TARGET_DIR)) install \
-		$(call opkg_package_files,$(shell cat $(PACKAGE_INSTALL_FILES) 2>/dev/null))
+		$(call opkg_package_files,$(shell cat $(PACKAGE_INSTALL_FILES) 2>/dev/null),$(SNAIL_FEED_SUBDIRS))
 	@for file in $(PACKAGE_INSTALL_FILES); do \
 		[ -s $$file.flags ] || continue; \
 		for flag in `cat $$file.flags`; do \
