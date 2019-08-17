@@ -198,17 +198,29 @@ define Device/d-team_newifi-d2
 endef
 TARGET_DEVICES += d-team_newifi-d2
 
-define Device/snail-xyc1
-  DTS := Snail-XYC1
+define Device/XiaoYu-C1
+  DTS := XiaoYu-C1
   IMAGE_SIZE := $(ralink_default_fw_size_32M)
-  DEVICE_TITLE := Snail XYC1
+  DEVICE_TITLE := XiaoYu C1
   DEVICE_PACKAGES := \
 	kmod-mt7603 kmod-mt76x2 \
 	kmod-ata-core kmod-ata-ahci kmod-ata-via-sata \
 	kmod-usb-core kmod-usb3 kmod-usb-ledtrig-usbport \
 	kmod-usb-storage kmod-usb-storage-extras
 endef
-TARGET_DEVICES += snail-xyc1
+TARGET_DEVICES += XiaoYu-C1 
+
+define Device/XiaoYu-C5
+  DTS := XiaoYu-C5
+  IMAGE_SIZE := $(ralink_default_fw_size_32M)
+  DEVICE_TITLE := XiaoYu C5
+  DEVICE_PACKAGES := \
+	kmod-mt7603 kmod-mt76x2 \
+	kmod-ata-core kmod-ata-ahci kmod-ata-via-sata \
+	kmod-usb-core kmod-usb3 kmod-usb-ledtrig-usbport \
+	kmod-usb-storage kmod-usb-storage-extras
+endef
+TARGET_DEVICES += XiaoYu-C5
 
 define Device/pbr-m1
   DTS := PBR-M1
