@@ -6,7 +6,7 @@
 #include <dt-bindings/input/input.h>
 
 / {
-	compatible = "xiaoyu,c1", "mediatek,mt7621-eval-board", "mediatek,mt7621-soc";
+	compatible = "xiaoyu,c1", "mediatek,mt7621-soc";
 	model = "XiaoYu C1";
 
 	memory@0 {
@@ -23,12 +23,12 @@
 
 		system {
 			label = "xy:green:system";
-			gpios = <&gpio0 0x7 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
 		};
 
 		work {
 			label = "xy:green:usb3.0";
-			gpios = <&gpio0 0x8 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio0 8 GPIO_ACTIVE_LOW>;
 		};
 	};
 
@@ -40,16 +40,15 @@
 
 		reset {
 			label = "reset";
-			gpios = <&gpio0 0x12 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio0 18 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 	};
-
-	sdhci@10130000 {
-		status = "okay";
-	};
 };
 
+&sdhci {
+	status = "okay";
+};
 
 &spi0 {
 	status = "okay";
