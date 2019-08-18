@@ -204,8 +204,8 @@ define Device/XiaoYu-C1
   DEVICE_TITLE := XiaoYu C1
   DEVICE_PACKAGES := \
 	kmod-ata-core kmod-ata-ahci \
-	kmod-usb-core kmod-usb3 kmod-usb-ledtrig-usbport \
-	kmod-usb-storage kmod-usb-storage-extras
+	kmod-usb3 kmod-usb-ledtrig-usbport \
+	wpad-basic
 endef
 TARGET_DEVICES += XiaoYu-C1 
 
@@ -215,8 +215,8 @@ define Device/XiaoYu-C5
   DEVICE_TITLE := XiaoYu C5
   DEVICE_PACKAGES := \
 	kmod-ata-core kmod-ata-ahci \
-	kmod-usb-core kmod-usb3 kmod-usb-ledtrig-usbport \
-	kmod-usb-storage kmod-usb-storage-extras
+	kmod-usb3 kmod-usb-ledtrig-usbport \
+	wpad-basic
 endef
 TARGET_DEVICES += XiaoYu-C5
 
