@@ -203,7 +203,7 @@ define Device/XiaoYu-C1
   IMAGE_SIZE := $(ralink_default_fw_size_32M)
   DEVICE_TITLE := XiaoYu C1
   DEVICE_PACKAGES := \
-	kmod-ata-core kmod-ata-ahci kmod-ata-via-sata \
+	kmod-ata-core kmod-ata-ahci \
 	kmod-usb-core kmod-usb3 kmod-usb-ledtrig-usbport \
 	kmod-usb-storage kmod-usb-storage-extras
 endef
@@ -214,7 +214,7 @@ define Device/XiaoYu-C5
   IMAGE_SIZE := $(ralink_default_fw_size_32M)
   DEVICE_TITLE := XiaoYu C5
   DEVICE_PACKAGES := \
-	kmod-ata-core kmod-ata-ahci kmod-ata-via-sata \
+	kmod-ata-core kmod-ata-ahci \
 	kmod-usb-core kmod-usb3 kmod-usb-ledtrig-usbport \
 	kmod-usb-storage kmod-usb-storage-extras
 endef
