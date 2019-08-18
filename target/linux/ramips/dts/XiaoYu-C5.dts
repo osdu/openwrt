@@ -3,7 +3,7 @@
 / {
 	#address-cells = <0x1>;
 	#size-cells = <0x1>;
-	compatible = "xiaoyu,c5", "mediatek,mt7621-eval-board", "mediatek,mt7621-soc";
+	compatible = "xiaoyu,c5", "mediatek,mt7621-soc";
 	model = "XiaoYu C5";
 
 	cpus {
