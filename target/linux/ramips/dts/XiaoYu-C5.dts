@@ -32,10 +32,10 @@
 
 	aliases {
 		serial0 = "/palmbus@1E000000/uartlite@c00";
-		led-boot = "/gpio-leds/power-blue";
-		led-failsafe = "/gpio-leds/power-blue";
-		led-running = "/gpio-leds/power-blue";
-		led-upgrade = "/gpio-leds/power-blue";
+		led-boot = "/gpio-leds/system";
+		led-failsafe = "/gpio-leds/system";
+		led-running = "/gpio-leds/system";
+		led-upgrade = "/gpio-leds/system";
 	};
 
 	pll {
@@ -236,7 +236,12 @@
 					partition@50000 {
 						compatible = "denx,uimage";
 						label = "firmware";
-						reg = <0x50000 0x1fb0000>;
+						reg = <0x50000 0x1fa0000>;
+					};
+
+					partition@1ff0000 {
+						label = "mib0";
+						reg = <0x1ff0000 0x10000>;
 					};
 				};
 			};
@@ -476,7 +481,7 @@
 		interrupt-parent = <0x4>;
 		interrupts = <0x0 0x3 0x4>;
 		mediatek,switch = <0xc>;
-		mtd-mac-address = <0xd 0xe000>;
+		mtd-mac-address = <0xd 0x4>;
 
 		mdio-bus {
 			#address-cells = <0x1>;
@@ -531,12 +536,6 @@
 			#address-cells = <0x3>;
 			#size-cells = <0x2>;
 			ranges;
-
-			mt76@0,0 {
-				reg = <0x0 0x0 0x0 0x0 0x0>;
-				mediatek,mtd-eeprom = <0xd 0x8000>;
-				ieee80211-freq-limit = <0x4c4b40 0x5b8d80>;
-			};
 		};
 
 		pcie@1,0 {
@@ -544,11 +543,6 @@
 			#address-cells = <0x3>;
 			#size-cells = <0x2>;
 			ranges;
-
-			mt76@0,0 {
-				reg = <0x0 0x0 0x0 0x0 0x0>;
-				mediatek,mtd-eeprom = <0xd 0x0>;
-			};
 		};
 
 		pcie@2,0 {
@@ -571,39 +565,14 @@
 	gpio-leds {
 		compatible = "gpio-leds";
 
-		power-amber {
-			label = "XiaoYu-C5:amber:power";
-			gpios = <0x10 0x6 0x1>;
-		};
-
-		power-blue {
-			label = "XiaoYu-C5:blue:power";
-			gpios = <0x10 0xf 0x1>;
-		};
-
-		internet-amber {
-			label = "XiaoYu-C5:amber:internet";
+		system {
+			label = "xy:green:system";
 			gpios = <0x10 0x7 0x1>;
 		};
 
-		internet-blue {
-			label = "XiaoYu-C5:blue:internet";
+		work {
+			label = "xy:green:usb3.0";
 			gpios = <0x10 0x8 0x1>;
-		};
-
-		wlan2g {
-			label = "XiaoYu-C5:blue:wlan2g";
-			gpios = <0x10 0xe 0x1>;
-		};
-
-		wlan5g {
-			label = "XiaoYu-C5:blue:wlan5g";
-			gpios = <0x10 0x10 0x1>;
-		};
-
-		usb {
-			label = "XiaoYu-C5:blue:usb";
-			gpios = <0x10 0xa 0x1>;
 			trigger-sources = <0x11 0x12>;
 			linux,default-trigger = "usbport";
 		};
@@ -617,23 +586,6 @@
 			label = "reset";
 			gpios = <0x10 0x12 0x1>;
 			linux,code = <0x198>;
-		};
-
-		wps {
-			label = "wps";
-			gpios = <0x10 0x7 0x1>;
-			linux,code = <0x211>;
-		};
-	};
-
-	gpio_export {
-		compatible = "gpio-export";
-		#size-cells = <0x0>;
-
-		power_usb3 {
-			gpio-export,name = "power_usb3";
-			gpio-export,output = <0x1>;
-			gpios = <0x10 0xb 0x0>;
 		};
 	};
 };
