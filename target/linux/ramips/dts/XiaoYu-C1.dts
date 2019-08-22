@@ -18,6 +18,14 @@
 		bootargs = "console=ttyS0,115200";
 	};
 
+	aliases {
+		serial0 = &uartlite;
+		led-boot = "/gpio-leds/system";
+		led-failsafe = "/gpio-leds/system";
+		led-running = "/gpio-leds/system";
+		led-upgrade = "/gpio-leds/system";
+	};
+
 	gpio-leds {
 		compatible = "gpio-leds";
 
@@ -86,28 +94,6 @@
 		partition@1ff0000 {
 			label = "mib0";
 			reg = <0x1ff0000 0x10000>;
-		};
-	};
-};
-
-&pcie {
-	status = "okay";
-
-	pcie0 {
-		mt76@0,0 {
-			reg = <0x0000 0 0 0 0>;
-			device_type = "pci";
-			mediatek,mtd-eeprom = <&factory 0x8000>;
-			mediatek,2ghz = <0x0>;
-		};
-	};
-
-	pcie1 {
-		mt76@1,0 {
-			reg = <0x0000 0 0 0 0>;
-			device_type = "pci";
-			mediatek,mtd-eeprom = <&factory 0x0000>;
-			mediatek,5ghz = <0x0>;
 		};
 	};
 };
