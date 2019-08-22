@@ -91,6 +91,7 @@
 				label = "firmware";
 				reg = <0x50000 0x1fb0000>;
 			};
+
 			partition@1ff0000 {
 				label = "mib0";
 				reg = <0x1ff0000 0x10000>;
