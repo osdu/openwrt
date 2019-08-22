@@ -9,27 +9,26 @@
 	compatible = "xiaoyu,c1", "mediatek,mt7621-soc";
 	model = "XiaoYu C1";
 
+	aliases {
+		led-boot = &led_system;
+		led-failsafe = &led_system;
+		led-running = &led_system;
+		led-upgrade = &led_system;
+	};
+
 	memory@0 {
 		device_type = "memory";
-		reg = <0x0 0x1c000000 0x20000000 0x4000000>;
+		reg = <0x0 0x1c000000>, <0x20000000 0x4000000>;
 	};
 
 	chosen {
 		bootargs = "console=ttyS0,115200";
 	};
 
-	aliases {
-		serial0 = &uartlite;
-		led-boot = "/gpio-leds/system";
-		led-failsafe = "/gpio-leds/system";
-		led-running = "/gpio-leds/system";
-		led-upgrade = "/gpio-leds/system";
-	};
-
 	gpio-leds {
 		compatible = "gpio-leds";
 
-		system {
+		led_system:system {
 			label = "xy:green:system";
 			gpios = <&gpio0 7 GPIO_ACTIVE_LOW>;
 		};
@@ -54,13 +53,10 @@
 	};
 };
 
-&sdhci {
-	status = "disabled";
-};
 
 &spi0 {
 	status = "okay";
-	
+
 	m25p80@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
@@ -72,7 +68,7 @@
 		partition@0 {
 			label = "u-boot";
 			reg = <0x0 0x30000>;
-			#read-only;
+			read-only;
 		};
 
 		partition@30000 {
@@ -84,9 +80,11 @@
 		factory: partition@40000 {
 			label = "factory";
 			reg = <0x40000 0x10000>;
+				read-only;
 		};
 
 		partition@50000 {
+			compatible = "denx,uimage";
 			label = "firmware";
 			reg = <0x50000 0x1fa0000>;
 		};
@@ -98,15 +96,18 @@
 	};
 };
 
-&ethernet {
+&pcie {
 	status = "okay";
+};
+
+&ethernet {
 	mtd-mac-address = <&factory 0x4>;
 };
 
 &pinctrl {
 	state_default: pinctrl0 {
 		gpio {
-			ralink,group = "i2c", "wdt", "rgmii2", "jtag", "sdhci", "uart2", "uart3";
+			ralink,group = "i2c", "jtag", "uart2", "uart3";
 			ralink,function = "gpio";
 		};
 	};
