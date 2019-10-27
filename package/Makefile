@@ -49,7 +49,7 @@ PACKAGE_INSTALL_FILES:= \
 $(curdir)/cleanup: $(TMP_DIR)/.build
 	rm -rf $(STAGING_DIR_ROOT)
 
-SNAIL_FEED_SUBDIRS=$(foreach SUBDIR_NAME,nas luci themes,$(OUTPUT_DIR)/packages/$(ARCH_PACKAGES)/snail/$(SUBDIR_NAME))
+SNAIL_FEED_SUBDIRS=$(foreach SUBDIR_NAME,luci themes,$(OUTPUT_DIR)/packages/$(ARCH_PACKAGES)/snail/$(SUBDIR_NAME))
 $(curdir)/merge:
 	rm -rf $(PACKAGE_DIR_ALL)
 	mkdir -p $(PACKAGE_DIR_ALL)
