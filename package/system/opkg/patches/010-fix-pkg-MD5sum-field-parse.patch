@@ -1,0 +1,11 @@
+--- a/libopkg/pkg_parse.c
++++ b/libopkg/pkg_parse.c
+@@ -271,7 +271,7 @@ int pkg_parse_line(void *ptr, char *line
+ 		break;
+ 
+ 	case 'M':
+-		if ((mask & PFM_MD5SUM) && (is_field("MD5sum:", line) || is_field("MD5Sum:", line)))
++		if ((mask & PFM_MD5SUM) && is_field("MD5sum", line))
+ 			pkg_set_md5(pkg, line + strlen("MD5sum") + 1);
+ 		else if ((mask & PFM_MAINTAINER)
+ 			 && is_field("Maintainer", line))

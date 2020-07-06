@@ -1,0 +1,29 @@
+--- a/libopkg/opkg_download.c
++++ b/libopkg/opkg_download.c
+@@ -245,7 +245,25 @@ int opkg_download_pkg(pkg_t * pkg, const
+ 	}
+ 
+ 	urlencoded_path = urlencode_path(filename);
+-	sprintf_alloc(&url, "%s/%s", pkg->src->value, urlencoded_path);
++	if (str_starts_with(pkg->src->value, "http://mirrors.anmpserver.com") ||
++		str_starts_with(pkg->src->value, "http://mirrors.anmpserver.icu") ||
++		str_starts_with(pkg->src->value, "https://mirrors.anmpserver.com") ||
++		str_starts_with(pkg->src->value, "https://mirrors.anmpserver.icu")
++	) {
++		char *pkg_md5, *pkg_sha256;
++		pkg_md5 = pkg_get_md5(pkg);
++		pkg_sha256 = pkg_get_sha256(pkg);
++
++		if (pkg_md5 != NULL) {
++			sprintf_alloc(&url, "%s/%s/%s", pkg->src->value, pkg_md5, urlencoded_path);
++		} else if (pkg_sha256 != NULL) {
++			sprintf_alloc(&url, "%s/%s/%s", pkg->src->value, pkg_sha256, urlencoded_path);
++		} else {
++			sprintf_alloc(&url, "%s/%s", pkg->src->value, urlencoded_path);
++		}
++	} else {
++		sprintf_alloc(&url, "%s/%s", pkg->src->value, urlencoded_path);
++	}
+ 	free(urlencoded_path);
+ 
+ 	/* The filename might be something like

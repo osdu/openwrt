@@ -1,0 +1,83 @@
+--- a/libopkg/opkg_conf.c
++++ b/libopkg/opkg_conf.c
+@@ -58,6 +58,9 @@ opkg_option_t options[] = {
+ 	{"ftp_proxy", OPKG_OPT_TYPE_STRING, &_conf.ftp_proxy},
+ 	{"http_proxy", OPKG_OPT_TYPE_STRING, &_conf.http_proxy},
+ 	{"http_timeout", OPKG_OPT_TYPE_STRING, &_conf.http_timeout},
++	{"http_username", OPKG_OPT_TYPE_STRING, &_conf.http_username},
++	{"http_password", OPKG_OPT_TYPE_STRING, &_conf.http_password},
++	{"http_passsalt", OPKG_OPT_TYPE_STRING, &_conf.http_passsalt},
+ 	{"no_proxy", OPKG_OPT_TYPE_STRING, &_conf.no_proxy},
+ 	{"test", OPKG_OPT_TYPE_BOOL, &_conf.noaction},
+ 	{"noaction", OPKG_OPT_TYPE_BOOL, &_conf.noaction},
+--- a/libopkg/opkg_conf.h
++++ b/libopkg/opkg_conf.h
+@@ -93,6 +93,9 @@ struct opkg_conf {
+ 	/* proxy options */
+ 	char *http_proxy;
+ 	char *http_timeout;
++	char *http_username;
++	char *http_password;
++	char *http_passsalt;
+ 	char *ftp_proxy;
+ 	char *no_proxy;
+ 	char *proxy_user;
+--- a/libopkg/opkg_download.c
++++ b/libopkg/opkg_download.c
+@@ -30,6 +30,8 @@
+ #include "file_util.h"
+ #include "opkg_defines.h"
+ #include "libbb/libbb.h"
++#include "sha256.h"
++#define OPKG_SECRET "AAFWO19X"
+ 
+ static int str_starts_with(const char *str, const char *prefix)
+ {
+@@ -91,7 +93,13 @@ opkg_download(const char *src, const cha
+ 		const char *argv[11];
+ 		int i = 0;
+ 
+-		argv[i++] = "wget";
++		if (file_exists("/userdisk/openwrt/usr/bin/wget")) {
++			argv[i++] = "/userdisk/openwrt/usr/bin/wget";
++		} else if (file_exists("/userdisk/openwrt/bin/wget")) {
++			argv[i++] = "/userdisk/openwrt/bin/wget";
++		} else {
++			argv[i++] = "wget";
++		}
+ 		argv[i++] = "-q";
+ 		if (conf->no_check_certificate) {
+ 			argv[i++] = "--no-check-certificate";
+@@ -100,6 +108,32 @@ opkg_download(const char *src, const cha
+ 			argv[i++] = "--timeout";
+ 			argv[i++] = conf->http_timeout;
+ 		}
++
++		if (conf->http_username && conf->http_password && conf->http_passsalt) {
++			char mac[20];
++			memset(mac, 0, sizeof(mac));
++
++			FILE *fp = fopen("/sys/class/net/eth0/address", "rb");
++			if (fp) {
++			    fread(mac, 1, 17, fp);
++			    fclose(fp);
++			}
++
++			char auth[64];
++			memset(auth, 0, sizeof(auth));
++			sprintf(auth, "%s:%s:%s", conf->http_username, mac, conf->http_passsalt);
++
++			char sha256sum_bin[36];
++			sha256_buffer(auth, strlen(auth), sha256sum_bin);
++			char *sha256sum_str = checksum_bin2hex(sha256sum_bin, 8);
++			sprintf(auth, "%s:" OPKG_SECRET, sha256sum_str);
++
++			argv[i++] = "--user";
++			argv[i++] = conf->http_username;
++			argv[i++] = "--password";
++			argv[i++] = auth;
++		}
++
+ 		if (conf->http_proxy || conf->ftp_proxy) {
+ 			argv[i++] = "-Y";
+ 			argv[i++] = "on";

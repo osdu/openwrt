@@ -1,0 +1,25 @@
+--- a/libopkg/opkg_cmd.c
++++ b/libopkg/opkg_cmd.c
+@@ -575,6 +575,7 @@ static int opkg_list_find_cmd(int argc,
+ 	pkg_vec_t *available;
+ 	pkg_t *pkg;
+ 	char *pkg_name = NULL;
++	char *newline = NULL;
+ 	char *description;
+ 
+ 	if (argc > 0) {
+@@ -591,6 +592,14 @@ static int opkg_list_find_cmd(int argc,
+ 		    (!use_desc || !description
+ 		     || fnmatch(pkg_name, description, conf->nocase)))
+ 			continue;
++
++		description = pkg_get_string(pkg, PKG_DESCRIPTION);
++		if (description) {
++		    if ((newline = strstr(description, "\n")) != NULL) {
++		         *newline = '\0'; newline = NULL;
++		    }
++		    pkg_set_string(pkg, PKG_DESCRIPTION, description);
++		}
+ 		print_pkg(pkg);
+ 	}
+ 	pkg_vec_free(available);

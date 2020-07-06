@@ -1,0 +1,44 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -7,7 +7,7 @@ INCLUDE(TestBigEndian)
+ SET(HOST_CPU "" CACHE STRING "Override Host CPU")
+ SET(BUILD_CPU "" CACHE STRING "Override Host CPU")
+ SET(LOCK_FILE "/var/lock/opkg.lock" CACHE STRING "Override lock file path")
+-SET(PATH_SPEC "/usr/sbin:/usr/bin:/sbin:/bin" CACHE STRING "Override default PATH value")
++SET(PATH_SPEC "/userdisk/openwrt/usr/sbin:/userdisk/openwrt/usr/bin:/userdisk/openwrt/sbin:/userdisk/openwrt/bin" CACHE STRING "Override default PATH value")
+ SET(VERSION "" CACHE STRING "Override version")
+ 
+ OPTION(STATIC_UBOX "Statically link libubox" OFF)
+@@ -36,8 +36,8 @@ ENDIF()
+ TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
+ 
+ ADD_DEFINITIONS(-Os -Wall --std=gnu99 -g3 -Wmissing-declarations
+-	-DDATADIR="/usr/share"
+-	-DOPKGETCDIR="/etc"
++	-DDATADIR="/userdisk/openwrt/usr/share"
++	-DOPKGETCDIR="/userdisk/openwrt/etc"
+ 	-DOPKGLOCKFILE="${LOCK_FILE}"
+ 	-DOPKGLIBDIR="/usr/lib"
+ 	-DHOST_CPU_STR="${HOST_CPU}"
+--- a/libopkg/opkg_conf.h
++++ b/libopkg/opkg_conf.h
+@@ -37,7 +37,7 @@ extern opkg_conf_t *conf;
+ 
+ /* In case the config file defines no dest */
+ #define OPKG_CONF_DEFAULT_DEST_NAME "root"
+-#define OPKG_CONF_DEFAULT_DEST_ROOT_DIR "/"
++#define OPKG_CONF_DEFAULT_DEST_ROOT_DIR "/userdisk/openwrt"
+ 
+ #define OPKG_CONF_DEFAULT_HASH_LEN 1024
+ 
+--- a/src/opkg-cl.c
++++ b/src/opkg-cl.c
+@@ -244,7 +244,7 @@ static int args_parse(int argc, char *ar
+ 	}
+ 
+ 	if (!conf->conf_file && !conf->offline_root)
+-		conf->conf_file = xstrdup("/etc/opkg.conf");
++		conf->conf_file = xstrdup(OPKGETCDIR "/opkg.conf");
+ 
+ 	if (parse_err)
+ 		return parse_err;

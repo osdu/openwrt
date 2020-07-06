@@ -1,0 +1,72 @@
+--- a/libopkg/opkg_conf.h
++++ b/libopkg/opkg_conf.h
+@@ -78,6 +78,7 @@ struct opkg_conf {
+ 	int force_checksum;
+ 	int check_signature;
+ 	int force_signature;
++	int force_isatty;
+ 	int no_check_certificate;
+ 	int nodeps;		/* do not follow dependencies */
+ 	int nocase;		/* perform case insensitive matching */
+--- a/libopkg/pkg_parse.c
++++ b/libopkg/pkg_parse.c
+@@ -334,12 +334,12 @@ int pkg_parse_line(void *ptr, char *line
+ 	case ' ':
+ 		if ((mask & PFM_DESCRIPTION) && reading_description) {
+ 			size_t len = (description ? strlen(description) : 0)
+-				+ (isatty(1) ? 1 : 0) + strlen(line) + 1;
++				+ ((conf->force_isatty || isatty(1)) ? 1 : 0) + strlen(line) + 1;
+ 
+ 			description = description ? xrealloc(description, len)
+ 				: xcalloc(len, 1);
+ 
+-			if (isatty(1))
++			if (conf->force_isatty || isatty(1))
+ 				strcat(description, "\n");
+ 
+ 			strcat(description, line);
+--- a/src/opkg-cl.c
++++ b/src/opkg-cl.c
+@@ -52,6 +52,7 @@ enum {
+ 	ARGS_OPT_AUTOREMOVE,
+ 	ARGS_OPT_CACHE,
+ 	ARGS_OPT_FORCE_SIGNATURE,
++	ARGS_OPT_FORCE_ISATTY,
+ 	ARGS_OPT_NO_CHECK_CERTIFICATE,
+ 	ARGS_OPT_SIZE,
+ };
+@@ -92,6 +93,8 @@ static struct option long_options[] = {
+ 	{"force_checksum", 0, 0, ARGS_OPT_FORCE_CHECKSUM},
+ 	{"force-signature", 0, 0, ARGS_OPT_FORCE_SIGNATURE},
+ 	{"force_signature", 0, 0, ARGS_OPT_FORCE_SIGNATURE},
++	{"force-isatty", 0, 0, ARGS_OPT_FORCE_ISATTY},
++	{"force_isatty", 0, 0, ARGS_OPT_FORCE_ISATTY},
+ 	{"no-check-certificate", 0, 0, ARGS_OPT_NO_CHECK_CERTIFICATE},
+ 	{"no_check_certificate", 0, 0, ARGS_OPT_NO_CHECK_CERTIFICATE},
+ 	{"noaction", 0, 0, ARGS_OPT_NOACTION},
+@@ -229,6 +232,9 @@ static int args_parse(int argc, char *ar
+ 		case ARGS_OPT_FORCE_SIGNATURE:
+ 			conf->force_signature = 1;
+ 			break;
++		case ARGS_OPT_FORCE_ISATTY:
++			conf->force_isatty = 1;
++			break;
+ 		case ARGS_OPT_NO_CHECK_CERTIFICATE:
+ 			conf->no_check_certificate = 1;
+ 			break;
+@@ -339,11 +345,12 @@ static void usage()
+ 	printf
+ 	    ("\t--force-postinstall	Run postinstall scripts even in offline mode\n");
+ 	printf
+-	    ("\t--force-remove	Remove package even if prerm script fails\n");
++	    ("\t--force-remove		Remove package even if prerm script fails\n");
+ 	printf("\t--force-checksum	Don't fail on checksum mismatches\n");
+-	printf("\t--no-check-certificate Don't validate SSL certificates\n");
++	printf("\t--force-isatty		Force tty mode output description field\n");
++	printf("\t--no-check-certificate	Don't validate SSL certificates\n");
+ 	printf("\t--noaction		No action -- test only\n");
+-	printf("\t--download-only	No action -- download only\n");
++	printf("\t--download-only		No action -- download only\n");
+ 	printf("\t--nodeps		Do not follow dependencies\n");
+ 	printf
+ 	    ("\t--nocase		Perform case insensitive pattern matching\n");
