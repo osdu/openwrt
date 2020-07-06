@@ -1,0 +1,11 @@
+--- a/uclient-fetch.c
++++ b/uclient-fetch.c
+@@ -476,7 +476,7 @@
+ 	glob_t gl;
+ 	int i;
+ 
+-	glob("/etc/ssl/certs/*.crt", 0, NULL, &gl);
++	glob("/userdisk/openwrt/etc/ssl/certs/*.crt", 0, NULL, &gl);
+ 	for (i = 0; i < gl.gl_pathc; i++)
+ 		ssl_ops->context_add_ca_crt_file(ssl_ctx, gl.gl_pathv[i]);
+ }
