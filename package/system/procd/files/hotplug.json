@@ -29,7 +29,7 @@
 			[ "if",
 				[ "has", "FIRMWARE" ],
 				[
-					[ "exec", "/sbin/hotplug-call", "%SUBSYSTEM%" ],
+					[ "exec", "/userdisk/openwrt/sbin/hotplug-call", "%SUBSYSTEM%" ],
 					[ "load-firmware", "/lib/firmware" ],
 					[ "return" ]
 				]
@@ -51,7 +51,7 @@
 			[ "has", "BUTTON" ],
 			[ "eq", "SUBSYSTEM", "button" ]
 		],
-		[ "button", "/etc/rc.button/%BUTTON%" ]
+		[ "button", "/userdisk/openwrt/etc/rc.button/%BUTTON%" ]
 	],
 	[ "if",
 		[ "and",
@@ -60,10 +60,10 @@
 				[ "^ttyUSB", "^ttyACM" ]
 			]
 		],
-		[ "exec", "/sbin/hotplug-call", "tty" ],
+		[ "exec", "/userdisk/openwrt/sbin/hotplug-call", "tty" ],
 		[ "if",
-			[ "isdir", "/etc/hotplug.d/%SUBSYSTEM%" ],
-			[ "exec", "/sbin/hotplug-call", "%SUBSYSTEM%" ]
+			[ "isdir", "/userdisk/openwrt/etc/hotplug.d/%SUBSYSTEM%" ],
+			[ "exec", "/userdisk/openwrt/sbin/hotplug-call", "%SUBSYSTEM%" ]
 		]
 	]
 ]

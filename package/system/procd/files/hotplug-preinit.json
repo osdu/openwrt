@@ -4,7 +4,7 @@
 			[ "if",
 				[ "has", "FIRMWARE" ],
 				[
-					[ "exec", "/sbin/hotplug-call", "%SUBSYSTEM%" ],
+					[ "exec", "/userdisk/openwrt/sbin/hotplug-call", "%SUBSYSTEM%" ],
 					[ "load-firmware", "/lib/firmware" ],
 					[ "return" ]
 				]
@@ -13,6 +13,6 @@
 	} ],
 	[ "if",
 		[ "eq", "SUBSYSTEM", "button" ],
-		[ "exec", "/etc/rc.button/failsafe" ]
+		[ "exec", "/userdisk/openwrt/etc/rc.button/failsafe" ]
 	]
 ]
