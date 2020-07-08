@@ -1,13 +1,14 @@
-#!/bin/sh /etc/rc.common
+#!/userdisk/openwrt/bin/sh /userdisk/openwrt/etc/rc.common
 # Copyright (C) 2010 Jo-Philipp Wich
+export OVERLAY_ROOT='/userdisk/openwrt'
 
 START=50
 
 USE_PROCD=1
 
-UHTTPD_BIN="/usr/sbin/uhttpd"
-PX5G_BIN="/usr/sbin/px5g"
-OPENSSL_BIN="/usr/bin/openssl"
+UHTTPD_BIN="${OVERLAY_ROOT}/usr/sbin/uhttpd"
+PX5G_BIN="${OVERLAY_ROOT}/usr/sbin/px5g"
+OPENSSL_BIN="${OVERLAY_ROOT}/usr/bin/openssl"
 
 append_arg() {
 	local cfg="$1"
@@ -102,13 +103,13 @@ start_instance()
 
 	config_get config "$cfg" config
 	if [ -z "$config" ]; then
-		mkdir -p /var/etc/uhttpd
-		httpdconf="/var/etc/uhttpd/httpd.${cfg}.conf"
+		mkdir -p ${OVERLAY_ROOT}/var/etc/uhttpd
+		httpdconf="${OVERLAY_ROOT}/var/etc/uhttpd/httpd.${cfg}.conf"
 		rm -f ${httpdconf}
 		config_list_foreach "$cfg" httpauth create_httpauth
 		if [ "$haveauth" = "1" ]; then
 			procd_append_param command -c ${httpdconf}
-			[ -r /etc/httpd.conf ] && cat /etc/httpd.conf >>/var/etc/uhttpd/httpd.${cfg}.conf
+			[ -r ${OVERLAY_ROOT}/etc/httpd.conf ] && cat ${OVERLAY_ROOT}/etc/httpd.conf >>${OVERLAY_ROOT}/var/etc/uhttpd/httpd.${cfg}.conf
 		fi
 	fi
 
@@ -116,7 +117,7 @@ start_instance()
 	append_arg "$cfg" realm "-r" "${realm:-OpenWrt}"
 	append_arg "$cfg" config "-c"
 	append_arg "$cfg" cgi_prefix "-x"
-	[ -f /usr/lib/uhttpd_lua.so ] && {
+	[ -f ${OVERLAY_ROOT}/usr/lib/uhttpd_lua.so ] && {
 		local len
 		config_get len "$cfg" lua_prefix_LENGTH
 
@@ -128,7 +129,7 @@ start_instance()
 			append_lua_prefix "$prefix=$handler"
 		fi
 	}
-	[ -f /usr/lib/uhttpd_ubus.so ] && {
+	[ -f ${OVERLAY_ROOT}/usr/lib/uhttpd_ubus.so ] && {
 		append_arg "$cfg" ubus_prefix "-u"
 		append_arg "$cfg" ubus_socket "-U"
 		append_bool "$cfg" ubus_cors "-X" 0
@@ -167,10 +168,10 @@ start_instance()
 	done
 
 	config_get https "$cfg" listen_https
-	config_get UHTTPD_KEY  "$cfg" key  /etc/uhttpd.key
-	config_get UHTTPD_CERT "$cfg" cert /etc/uhttpd.crt
+	config_get UHTTPD_KEY  "$cfg" key  ${OVERLAY_ROOT}/etc/uhttpd.key
+	config_get UHTTPD_CERT "$cfg" cert ${OVERLAY_ROOT}/etc/uhttpd.crt
 
-	[ -f /lib/libustream-ssl.so ] && [ -n "$https" ] && {
+	[ -f ${OVERLAY_ROOT}/lib/libustream-ssl.so ] && [ -n "$https" ] && {
 		[ -s "$UHTTPD_CERT" -a -s "$UHTTPD_KEY" ] || {
 			config_foreach generate_keys cert
 		}
@@ -187,7 +188,7 @@ start_instance()
 		append_bool "$cfg" redirect_https "-q" 0
 	}
 
-	for file in /etc/uhttpd/*.json; do
+	for file in ${OVERLAY_ROOT}/etc/uhttpd/*.json; do
 		[ -s "$file" ] && procd_append_param command -H "$file"
 	done
 
