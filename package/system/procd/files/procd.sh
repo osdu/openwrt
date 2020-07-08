@@ -33,7 +33,7 @@
 #   Send a signal to a service instance (or all instances)
 #
 
-. "$IPKG_INSTROOT/usr/share/libubox/jshn.sh"
+. "$IPKG_INSTROOT/userdisk/openwrt/usr/share/libubox/jshn.sh"
 
 PROCD_RELOAD_DELAY=1000
 _PROCD_SERVICE=
@@ -44,7 +44,7 @@ procd_lock() {
 
 	flock -n 1000 &> /dev/null
 	if [ "$?" != "0" ]; then
-		exec 1000>"$IPKG_INSTROOT/var/lock/procd_${service_name}.lock"
+		exec 1000>"$IPKG_INSTROOT/userdisk/openwrt/var/lock/procd_${service_name}.lock"
 		flock 1000
 		if [ "$?" != "0" ]; then
 			logger "warning: procd flock for $service_name failed"
@@ -290,7 +290,7 @@ _procd_add_reload_interface_trigger() {
 	local name=$(basename ${script:-$initscript})
 
 	_procd_open_trigger
-	_procd_add_interface_trigger "interface.*" $1 /etc/init.d/$name reload
+	_procd_add_interface_trigger "interface.*" $1 /userdisk/openwrt/etc/init.d/$name reload
 	_procd_close_trigger
 }
 
@@ -341,7 +341,7 @@ _procd_add_reload_trigger() {
 
 	_procd_open_trigger
 	for file in "$@"; do
-		_procd_add_config_trigger "config.change" "$file" /etc/init.d/$name reload
+		_procd_add_config_trigger "config.change" "$file" /userdisk/openwrt/etc/init.d/$name reload
 	done
 	_procd_close_trigger
 }
@@ -479,10 +479,10 @@ uci_validate_section()
 	local _result
 	local _error
 	shift; shift; shift
-	_result=`/sbin/validate_data "$_package" "$_type" "$_name" "$@" 2> /dev/null`
+	_result=`/userdisk/openwrt/sbin/validate_data "$_package" "$_type" "$_name" "$@" 2> /dev/null`
 	_error=$?
 	eval "$_result"
-	[ "$_error" = "0" ] || `/sbin/validate_data "$_package" "$_type" "$_name" "$@" 1> /dev/null`
+	[ "$_error" = "0" ] || `/userdisk/openwrt/sbin/validate_data "$_package" "$_type" "$_name" "$@" 1> /dev/null`
 	return $_error
 }
 
