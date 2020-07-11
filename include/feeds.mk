@@ -18,14 +18,14 @@ ifneq ($(CONFIG_PER_FEED_REPO),)
 endif
 
 opkg_package_files = $(wildcard \
-	$(foreach dir,$(PACKAGE_SUBDIRS), \
+	$(foreach dir,$(PACKAGE_SUBDIRS) $(if $(2),$(2)), \
 	  $(foreach pkg,$(1), $(dir)/$(pkg)_*.ipk)))
 
 # 1: package name
 define FeedPackageDir
 $(strip $(if $(CONFIG_PER_FEED_REPO), \
   $(if $(Package/$(1)/subdir), \
-    $(abspath $(OUTPUT_DIR)/packages/$(ARCH_PACKAGES)/$(Package/$(1)/subdir)), \
+    $(abspath $(OUTPUT_DIR)/packages/$(ARCH_PACKAGES)/$(strip $(Package/$(1)/subdir))), \
     $(PACKAGE_DIR)), \
   $(PACKAGE_DIR)))
 endef
