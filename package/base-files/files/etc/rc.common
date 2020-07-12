@@ -1,6 +1,6 @@
-#!/userdisk/openwrt/bin/sh
+#!/userdisk/miwifi/bin/sh
 # Copyright (C) 2006-2012 OpenWrt.org
-export OVERLAY_ROOT='/userdisk/openwrt'
+export OVERLAY_ROOT='/userdisk/miwifi'
 
 . $IPKG_INSTROOT${OVERLAY_ROOT}/lib/functions.sh
 . $IPKG_INSTROOT${OVERLAY_ROOT}/lib/functions/service.sh
