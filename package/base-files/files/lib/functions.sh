@@ -155,15 +155,20 @@ default_prerm() {
 	local pkgname="$(basename ${1%.*})"
 	local ret=0
 
-	if [ -f "$root/usr/lib/opkg/info/${pkgname}.prerm-pkg" ]; then
-		( . "$root/usr/lib/opkg/info/${pkgname}.prerm-pkg" )
+	if [ -f "$root/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.prerm-pkg" ]; then
+		( . "$root/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.prerm-pkg" )
 		ret=$?
 	fi
 
+	[ -z "$root" ] && {
+		rm -rf /userdisk/miwifi/tmp/luci-modulecache 2>/dev/null
+		rm -rf /userdisk/miwifi/tmp/luci-indexcache 2>/dev/null
+	}
+
 	local shell="$(which bash)"
-	for i in $(grep -s "^/etc/init.d/" "$root/usr/lib/opkg/info/${pkgname}.list"); do
+	for i in $(grep -s "^/userdisk/miwifi/etc/init.d/" "$root/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.list"); do
 		if [ -n "$root" ]; then
-			${shell:-/bin/sh} "$root/etc/rc.common" "$root$i" disable
+			${shell:-/bin/sh} "$root/userdisk/miwifi/etc/rc.common" "$root$i" disable
 		else
 			if [ "$PKG_UPGRADE" != "1" ]; then
 				"$i" disable
@@ -177,7 +182,7 @@ default_prerm() {
 
 add_group_and_user() {
 	local pkgname="$1"
-	local rusers="$(sed -ne 's/^Require-User: *//p' $root/usr/lib/opkg/info/${pkgname}.control 2>/dev/null)"
+	local rusers="$(sed -ne 's/^Require-User: *//p' $root/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.control 2>/dev/null)"
 
 	if [ -n "$rusers" ]; then
 		local tuple oIFS="$IFS"
@@ -217,8 +222,8 @@ default_postinst() {
 
 	add_group_and_user "${pkgname}"
 
-	if [ -f "$root/usr/lib/opkg/info/${pkgname}.postinst-pkg" ]; then
-		( . "$root/usr/lib/opkg/info/${pkgname}.postinst-pkg" )
+	if [ -f "$root/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.postinst-pkg" ]; then
+		( . "$root/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.postinst-pkg" )
 		ret=$?
 	fi
 
@@ -227,25 +232,28 @@ default_postinst() {
 		rm -fR $root/rootfs-overlay/
 	fi
 
-	if [ -z "$root" ] && grep -q -s "^/etc/modules.d/" "/usr/lib/opkg/info/${pkgname}.list"; then
+	if [ -z "$root" ] && grep -q -s "^/userdisk/miwifi/etc/modules.d/" "/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.list"; then
 		kmodloader
 	fi
 
-	if [ -z "$root" ] && grep -q -s "^/etc/uci-defaults/" "/usr/lib/opkg/info/${pkgname}.list"; then
-		. /lib/functions/system.sh
-		[ -d /tmp/.uci ] || mkdir -p /tmp/.uci
-		for i in $(grep -s "^/etc/uci-defaults/" "/usr/lib/opkg/info/${pkgname}.list"); do
+	if [ -z "$root" ] && grep -q -s "^/userdisk/miwifi/etc/uci-defaults/" "/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.list"; then
+		. /userdisk/miwifi/lib/functions/system.sh
+		[ -d /userdisk/miwifi/tmp/.uci ] || mkdir -p /userdisk/miwifi/tmp/.uci
+		for i in $(grep -s "^/userdisk/miwifi/etc/uci-defaults/" "/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.list"); do
 			( [ -f "$i" ] && cd "$(dirname $i)" && . "$i" ) && rm -f "$i"
 		done
-		uci commit
+		/userdisk/miwifi/sbin/uci commit 2>/dev/null
 	fi
 
-	[ -n "$root" ] || rm -f /tmp/luci-indexcache 2>/dev/null
+	[ -z "$root" ] && {
+		rm -rf /userdisk/miwifi/tmp/luci-modulecache 2>/dev/null
+		rm -rf /userdisk/miwifi/tmp/luci-indexcache 2>/dev/null
+	}
 
 	local shell="$(which bash)"
-	for i in $(grep -s "^/etc/init.d/" "$root/usr/lib/opkg/info/${pkgname}.list"); do
+	for i in $(grep -s "^/userdisk/miwifi/etc/init.d/" "$root/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.list"); do
 		if [ -n "$root" ]; then
-			${shell:-/bin/sh} "$root/etc/rc.common" "$root$i" enable
+			${shell:-/bin/sh} "$root/userdisk/miwifi/etc/rc.common" "$root$i" enable
 		else
 			if [ "$PKG_UPGRADE" != "1" ]; then
 				"$i" enable
@@ -351,4 +359,4 @@ board_name() {
 	[ -e /tmp/sysinfo/board_name ] && cat /tmp/sysinfo/board_name || echo "generic"
 }
 
-[ -z "$IPKG_INSTROOT" -a -f /lib/config/uci.sh ] && . /lib/config/uci.sh
+[ -z "$IPKG_INSTROOT" -a -f /userdisk/miwifi/lib/config/uci.sh ] && . /userdisk/miwifi/lib/config/uci.sh
