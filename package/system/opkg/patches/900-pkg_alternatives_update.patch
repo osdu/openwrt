@@ -1,0 +1,24 @@
+diff --git a/libopkg/pkg_alternatives.c b/libopkg/pkg_alternatives.c
+index 24efedf..8537a46 100644
+--- a/libopkg/pkg_alternatives.c
++++ b/libopkg/pkg_alternatives.c
+@@ -35,7 +35,7 @@ struct alternative_provider {
+ static const struct alternative_provider providers[] = {
+ 	{
+ 		.name = "busybox",
+-		.altpath = "/bin/busybox",
++		.altpath = "/userdisk/miwifi/bin/busybox",
+ 	},
+ };
+ 
+@@ -99,7 +99,9 @@ static int pkg_alternatives_update_path(pkg_t *pkg, const pkg_vec_t *installed,
+ 	if (the_alt) {
+ 		target_path = the_alt->altpath;
+ 	} else {
+-		target_path = pkg_alternatives_check_providers(path);
++		char *miwifi_path;
++		sprintf_alloc(&miwifi_path, "%s%s", "/userdisk/miwifi", path);
++		target_path = pkg_alternatives_check_providers(miwifi_path);
+ 	}
+ 
+ 	if (target_path) {
