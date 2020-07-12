@@ -27,7 +27,7 @@
  /* In case the config file defines no dest */
  #define OPKG_CONF_DEFAULT_DEST_NAME "root"
 -#define OPKG_CONF_DEFAULT_DEST_ROOT_DIR "/"
-+#define OPKG_CONF_DEFAULT_DEST_ROOT_DIR "/userdisk"
++#define OPKG_CONF_DEFAULT_DEST_ROOT_DIR "/userdisk/"
  
  #define OPKG_CONF_DEFAULT_HASH_LEN 1024
  
