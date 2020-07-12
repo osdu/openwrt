@@ -161,8 +161,8 @@ default_prerm() {
 	fi
 
 	[ -z "$root" ] && {
-		rm -rf /userdisk/miwifi/tmp/luci-modulecache 2>/dev/null
 		rm -rf /userdisk/miwifi/tmp/luci-indexcache 2>/dev/null
+		rm -rf /userdisk/miwifi/tmp/luci-modulecache 2>/dev/null
 	}
 
 	local shell="$(which bash)"
@@ -227,9 +227,9 @@ default_postinst() {
 		ret=$?
 	fi
 
-	if [ -d "$root/rootfs-overlay" ]; then
-		cp -R $root/rootfs-overlay/. $root/
-		rm -fR $root/rootfs-overlay/
+	if [ -d "$root/userdisk/miwifi/rootfs-overlay" ]; then
+		cp -R $root/userdisk/miwifi/rootfs-overlay/. $root/userdisk/miwifi/
+		rm -fR $root/userdisk/miwifi/rootfs-overlay/
 	fi
 
 	if [ -z "$root" ] && grep -q -s "^/userdisk/miwifi/etc/modules.d/" "/userdisk/miwifi/usr/lib/opkg/info/${pkgname}.list"; then
@@ -246,8 +246,8 @@ default_postinst() {
 	fi
 
 	[ -z "$root" ] && {
-		rm -rf /userdisk/miwifi/tmp/luci-modulecache 2>/dev/null
 		rm -rf /userdisk/miwifi/tmp/luci-indexcache 2>/dev/null
+		rm -rf /userdisk/miwifi/tmp/luci-modulecache 2>/dev/null
 	}
 
 	local shell="$(which bash)"
