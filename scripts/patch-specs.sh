@@ -51,7 +51,7 @@ patch_specs() {
 						mode = "link"
 					}
 				' > "$lib/specs"
-				sed -i 's@:/lib/ld-musl-@:/userdisk/openwrt/lib/ld-musl-@g' "$lib/specs"
+				sed -i 's@:/lib/ld-musl-@:/userdisk/miwifi/lib/ld-musl-@g' "$lib/specs"
 				echo "ok"
 				found=1
 			fi
