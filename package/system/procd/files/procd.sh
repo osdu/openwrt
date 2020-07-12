@@ -32,7 +32,7 @@
 # procd_send_signal(service, [instance], [signal])
 #   Send a signal to a service instance (or all instances)
 #
-export OVERLAY_ROOT='/userdisk/openwrt'
+export OVERLAY_ROOT='/userdisk/miwifi'
 
 . "$IPKG_INSTROOT${OVERLAY_ROOT}/usr/share/libubox/jshn.sh"
 

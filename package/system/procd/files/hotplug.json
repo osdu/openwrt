@@ -29,7 +29,7 @@
 			[ "if",
 				[ "has", "FIRMWARE" ],
 				[
-					[ "exec", "/userdisk/openwrt/sbin/hotplug-call", "%SUBSYSTEM%" ],
+					[ "exec", "/userdisk/miwifi/sbin/hotplug-call", "%SUBSYSTEM%" ],
 					[ "load-firmware", "/lib/firmware" ],
 					[ "return" ]
 				]
@@ -51,7 +51,7 @@
 			[ "has", "BUTTON" ],
 			[ "eq", "SUBSYSTEM", "button" ]
 		],
-		[ "button", "/userdisk/openwrt/etc/rc.button/%BUTTON%" ]
+		[ "button", "/userdisk/miwifi/etc/rc.button/%BUTTON%" ]
 	],
 	[ "if",
 		[ "and",
@@ -60,10 +60,10 @@
 				[ "^ttyUSB", "^ttyACM" ]
 			]
 		],
-		[ "exec", "/userdisk/openwrt/sbin/hotplug-call", "tty" ],
+		[ "exec", "/userdisk/miwifi/sbin/hotplug-call", "tty" ],
 		[ "if",
-			[ "isdir", "/userdisk/openwrt/etc/hotplug.d/%SUBSYSTEM%" ],
-			[ "exec", "/userdisk/openwrt/sbin/hotplug-call", "%SUBSYSTEM%" ]
+			[ "isdir", "/userdisk/miwifi/etc/hotplug.d/%SUBSYSTEM%" ],
+			[ "exec", "/userdisk/miwifi/sbin/hotplug-call", "%SUBSYSTEM%" ]
 		]
 	]
 ]
