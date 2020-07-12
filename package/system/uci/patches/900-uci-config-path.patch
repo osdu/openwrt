@@ -7,7 +7,7 @@ index f8b45db..635639a 100644
  		"\n"
  		"Options:\n"
 -		"\t-c <path>  set the search path for config files (default: /etc/config)\n"
-+		"\t-c <path>  set the search path for config files (default: /userdisk/openwrt/etc/config)\n"
++		"\t-c <path>  set the search path for config files (default: /userdisk/miwifi/etc/config)\n"
  		"\t-d <str>   set the delimiter for list values in uci show\n"
  		"\t-f <file>  use <file> as input instead of stdin\n"
  		"\t-m         when importing, merge data into an existing package\n"
@@ -21,7 +21,7 @@ index 43f2052..160d2a6 100644
  
 -#define UCI_CONFDIR "/etc/config"
 -#define UCI_SAVEDIR "/tmp/.uci"
-+#define UCI_CONFDIR "/userdisk/openwrt/etc/config"
++#define UCI_CONFDIR "/userdisk/miwifi/etc/config"
 +#define UCI_SAVEDIR "/tmp/.uci_v3"
  #define UCI_DIRMODE 0700
  #define UCI_FILEMODE 0600
