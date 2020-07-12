@@ -1,6 +1,6 @@
-#!/userdisk/openwrt/bin/sh /userdisk/openwrt/etc/rc.common
+#!/userdisk/miwifi/bin/sh /userdisk/miwifi/etc/rc.common
 # Copyright (C) 2010 Jo-Philipp Wich
-export OVERLAY_ROOT='/userdisk/openwrt'
+export OVERLAY_ROOT='/userdisk/miwifi'
 
 START=50
 
