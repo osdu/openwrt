@@ -5,9 +5,9 @@
  
  	urlencoded_path = urlencode_path(filename);
 -	sprintf_alloc(&url, "%s/%s", pkg->src->value, urlencoded_path);
-+	if (str_starts_with(pkg->src->value, "http://mirrors.anmpserver.com") ||
-+		str_starts_with(pkg->src->value, "http://mirrors.anmpserver.icu") ||
++	if (str_starts_with(pkg->src->value,  "http://mirrors.anmpserver.com") ||
 +		str_starts_with(pkg->src->value, "https://mirrors.anmpserver.com") ||
++		str_starts_with(pkg->src->value,  "http://mirrors.anmpserver.icu") ||
 +		str_starts_with(pkg->src->value, "https://mirrors.anmpserver.icu")
 +	) {
 +		char *pkg_md5, *pkg_sha256;
