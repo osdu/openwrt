@@ -1,15 +1,20 @@
 #!/bin/sh
 rm -rf /userdisk/miwifi/var/run/config.check
 mkdir -p /userdisk/miwifi/var/run/config.check
+
 for config in /userdisk/miwifi/etc/config/*; do
 	file=${config##*/}
-	uci show "${file##*/}" > /userdisk/miwifi/var/run/config.check/$file
+	[ "${file}" = "${file%%-opkg}" ] || continue
+	uci -q show "${file##*/}" > /userdisk/miwifi/var/run/config.check/$file
 done
+
 MD5FILE=/userdisk/miwifi/var/run/config.md5
 [ -f $MD5FILE ] && {
 	for c in `md5sum -c $MD5FILE 2>/dev/null| grep FAILED | cut -d: -f1`; do
 		ubus call service event "{ \"type\": \"config.change\", \"data\": { \"package\": \"$(basename $c)\" }}"
 	done
 }
+
 md5sum /userdisk/miwifi/var/run/config.check/* > $MD5FILE
 rm -rf /userdisk/miwifi/var/run/config.check
+

@@ -32,9 +32,8 @@
 # procd_send_signal(service, [instance], [signal])
 #   Send a signal to a service instance (or all instances)
 #
-export OVERLAY_ROOT='/userdisk/miwifi'
 
-. "$IPKG_INSTROOT${OVERLAY_ROOT}/usr/share/libubox/jshn.sh"
+. "$IPKG_INSTROOT/userdisk/miwifi/usr/share/libubox/jshn.sh"
 
 PROCD_RELOAD_DELAY=1000
 _PROCD_SERVICE=
@@ -45,7 +44,7 @@ procd_lock() {
 
 	flock -n 1000 &> /dev/null
 	if [ "$?" != "0" ]; then
-		exec 1000>"$IPKG_INSTROOT${OVERLAY_ROOT}/var/lock/procd_${service_name}.lock"
+		exec 1000>"$IPKG_INSTROOT/userdisk/miwifi/var/lock/procd_${service_name}.lock"
 		flock 1000
 		if [ "$?" != "0" ]; then
 			logger "warning: procd flock for $service_name failed"
@@ -73,8 +72,8 @@ _procd_ubus_call() {
 	local cmd="$1"
 
 	[ -n "$PROCD_DEBUG" ] && json_dump >&2
-	${OVERLAY_ROOT}/bin/ubus \
-		-s ${OVERLAY_ROOT}/var/run/ubus.sock \
+	/userdisk/miwifi/bin/ubus \
+		-s /userdisk/miwifi/var/run/ubus.sock \
 			call service "$cmd" "$(json_dump)"
 	json_cleanup
 }
@@ -293,7 +292,7 @@ _procd_add_reload_interface_trigger() {
 	local name=$(basename ${script:-$initscript})
 
 	_procd_open_trigger
-	_procd_add_interface_trigger "interface.*" $1 ${OVERLAY_ROOT}/etc/init.d/$name reload
+	_procd_add_interface_trigger "interface.*" $1 /userdisk/miwifi/etc/init.d/$name reload
 	_procd_close_trigger
 }
 
@@ -344,7 +343,7 @@ _procd_add_reload_trigger() {
 
 	_procd_open_trigger
 	for file in "$@"; do
-		_procd_add_config_trigger "config.change" "$file" ${OVERLAY_ROOT}/etc/init.d/$name reload
+		_procd_add_config_trigger "config.change" "$file" /userdisk/miwifi/etc/init.d/$name reload
 	done
 	_procd_close_trigger
 }
@@ -447,8 +446,8 @@ _procd_set_config_changed() {
 	json_add_string package "$package"
 	json_close_object
 
-	${OVERLAY_ROOT}/bin/ubus \
-		-s ${OVERLAY_ROOT}/var/run/ubus.sock \
+	/userdisk/miwifi/bin/ubus \
+		-s /userdisk/miwifi/var/run/ubus.sock \
 			call service event "$(json_dump)"
 }
 
@@ -484,10 +483,10 @@ uci_validate_section()
 	local _result
 	local _error
 	shift; shift; shift
-	_result=`${OVERLAY_ROOT}/sbin/validate_data "$_package" "$_type" "$_name" "$@" 2> /dev/null`
+	_result=`/userdisk/miwifi/sbin/validate_data "$_package" "$_type" "$_name" "$@" 2> /dev/null`
 	_error=$?
 	eval "$_result"
-	[ "$_error" = "0" ] || `${OVERLAY_ROOT}/sbin/validate_data "$_package" "$_type" "$_name" "$@" 1> /dev/null`
+	[ "$_error" = "0" ] || `/userdisk/miwifi/sbin/validate_data "$_package" "$_type" "$_name" "$@" 1> /dev/null`
 	return $_error
 }
 
