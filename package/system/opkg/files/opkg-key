@@ -19,24 +19,24 @@ opkg_key_verify() {
 	(
 		zcat "$msgfile" 2>/dev/null ||
 		cat "$msgfile" 2>/dev/null
-	) | /userdisk/openwrt/usr/bin/usign -V -P /userdisk/openwrt/etc/opkg/keys -q -x "$sigfile" -m -
+	) | /userdisk/miwifi/usr/bin/usign -V -P /userdisk/miwifi/etc/opkg/keys -q -x "$sigfile" -m -
 }
 
 opkg_key_add() {
 	local key="$1"
 	[ -n "$key" ] || usage
 	[ -f "$key" ] || echo "Cannot open file $1"
-	local fingerprint="$(/userdisk/openwrt/usr/bin/usign -F -p "$key")"
-	mkdir -p "/userdisk/openwrt/etc/opkg/keys"
-	cp "$key" "/userdisk/openwrt/etc/opkg/keys/$fingerprint"
+	local fingerprint="$(/userdisk/miwifi/usr/bin/usign -F -p "$key")"
+	mkdir -p "/userdisk/miwifi/etc/opkg/keys"
+	cp "$key" "/userdisk/miwifi/etc/opkg/keys/$fingerprint"
 }
 
 opkg_key_remove() {
 	local key="$1"
 	[ -n "$key" ] || usage
 	[ -f "$key" ] || echo "Cannot open file $1"
-	local fingerprint="$(/userdisk/openwrt/usr/bin/usign -F -p "$key")"
-	rm -f "/userdisk/openwrt/etc/opkg/keys/$fingerprint"
+	local fingerprint="$(/userdisk/miwifi/usr/bin/usign -F -p "$key")"
+	rm -f "/userdisk/miwifi/etc/opkg/keys/$fingerprint"
 }
 
 case "$1" in

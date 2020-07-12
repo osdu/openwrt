@@ -38,10 +38,10 @@
  		int i = 0;
  
 -		argv[i++] = "wget";
-+		if (file_exists("/userdisk/openwrt/usr/bin/wget")) {
-+			argv[i++] = "/userdisk/openwrt/usr/bin/wget";
-+		} else if (file_exists("/userdisk/openwrt/bin/wget")) {
-+			argv[i++] = "/userdisk/openwrt/bin/wget";
++		if (file_exists("/userdisk/miwifi/usr/bin/wget")) {
++			argv[i++] = "/userdisk/miwifi/usr/bin/wget";
++		} else if (file_exists("/userdisk/miwifi/bin/wget")) {
++			argv[i++] = "/userdisk/miwifi/bin/wget";
 +		} else {
 +			argv[i++] = "wget";
 +		}

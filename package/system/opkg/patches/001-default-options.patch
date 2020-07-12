@@ -5,7 +5,7 @@
  SET(BUILD_CPU "" CACHE STRING "Override Host CPU")
  SET(LOCK_FILE "/var/lock/opkg.lock" CACHE STRING "Override lock file path")
 -SET(PATH_SPEC "/usr/sbin:/usr/bin:/sbin:/bin" CACHE STRING "Override default PATH value")
-+SET(PATH_SPEC "/userdisk/openwrt/usr/sbin:/userdisk/openwrt/usr/bin:/userdisk/openwrt/sbin:/userdisk/openwrt/bin" CACHE STRING "Override default PATH value")
++SET(PATH_SPEC "/userdisk/miwifi/usr/sbin:/userdisk/miwifi/usr/bin:/userdisk/miwifi/sbin:/userdisk/miwifi/bin" CACHE STRING "Override default PATH value")
  SET(VERSION "" CACHE STRING "Override version")
  
  OPTION(STATIC_UBOX "Statically link libubox" OFF)
@@ -15,8 +15,8 @@
  ADD_DEFINITIONS(-Os -Wall --std=gnu99 -g3 -Wmissing-declarations
 -	-DDATADIR="/usr/share"
 -	-DOPKGETCDIR="/etc"
-+	-DDATADIR="/userdisk/openwrt/usr/share"
-+	-DOPKGETCDIR="/userdisk/openwrt/etc"
++	-DDATADIR="/userdisk/miwifi/usr/share"
++	-DOPKGETCDIR="/userdisk/miwifi/etc"
  	-DOPKGLOCKFILE="${LOCK_FILE}"
  	-DOPKGLIBDIR="/usr/lib"
  	-DHOST_CPU_STR="${HOST_CPU}"
@@ -27,7 +27,7 @@
  /* In case the config file defines no dest */
  #define OPKG_CONF_DEFAULT_DEST_NAME "root"
 -#define OPKG_CONF_DEFAULT_DEST_ROOT_DIR "/"
-+#define OPKG_CONF_DEFAULT_DEST_ROOT_DIR "/userdisk/openwrt"
++#define OPKG_CONF_DEFAULT_DEST_ROOT_DIR "/userdisk"
  
  #define OPKG_CONF_DEFAULT_HASH_LEN 1024
  
