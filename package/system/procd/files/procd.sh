@@ -72,9 +72,7 @@ _procd_ubus_call() {
 	local cmd="$1"
 
 	[ -n "$PROCD_DEBUG" ] && json_dump >&2
-	/userdisk/miwifi/bin/ubus \
-		-s /userdisk/miwifi/var/run/ubus.sock \
-			call service "$cmd" "$(json_dump)"
+	/userdisk/miwifi/bin/ubus call service "$cmd" "$(json_dump)"
 	json_cleanup
 }
 
@@ -446,9 +444,7 @@ _procd_set_config_changed() {
 	json_add_string package "$package"
 	json_close_object
 
-	/userdisk/miwifi/bin/ubus \
-		-s /userdisk/miwifi/var/run/ubus.sock \
-			call service event "$(json_dump)"
+	/userdisk/miwifi/bin/ubus call service event "$(json_dump)"
 }
 
 procd_add_mdns_service() {
