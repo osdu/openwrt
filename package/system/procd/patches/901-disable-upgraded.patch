@@ -1,0 +1,11 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -40,7 +40,7 @@ IF(ZRAM_TMPFS)
+   SET(SOURCES_ZRAM initd/zram.c)
+ ENDIF()
+ 
+-add_subdirectory(upgraded)
++# add_subdirectory(upgraded)
+ 
+ ADD_EXECUTABLE(procd ${SOURCES})
+ TARGET_LINK_LIBRARIES(procd ${LIBS})

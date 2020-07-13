@@ -1,175 +1,3 @@
-diff --git a/initd/early.c b/initd/early.c
-index 00fd946..5aaf3e1 100644
---- a/initd/early.c
-+++ b/initd/early.c
-@@ -60,23 +60,23 @@ early_mounts(void)
- 	mount("sysfs", "/sys", "sysfs", MS_NOATIME | MS_NODEV | MS_NOEXEC | MS_NOSUID, 0);
- 	mount("cgroup", "/sys/fs/cgroup", "cgroup",  MS_NODEV | MS_NOEXEC | MS_NOSUID, 0);
- 	mount("tmpfs", "/dev", "tmpfs", MS_NOATIME | MS_NOSUID, "mode=0755,size=512K");
--	ignore(symlink("/tmp/shm", "/dev/shm"));
-+	ignore(symlink("/userdisk/miwifi/tmp/shm", "/dev/shm"));
- 	mkdir("/dev/pts", 0755);
- 	mount("devpts", "/dev/pts", "devpts", MS_NOATIME | MS_NOEXEC | MS_NOSUID, "mode=600");
- 	early_dev();
- 
- 	early_console("/dev/console");
- 	if (mount_zram_on_tmp()) {
--		mount("tmpfs", "/tmp", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOATIME, 0);
--		mkdir("/tmp/shm", 01777);
-+		mount("tmpfs", "/userdisk/miwifi/tmp", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOATIME, 0);
-+		mkdir("/userdisk/miwifi/tmp/shm", 01777);
- 	} else {
--		mkdir("/tmp/shm", 01777);
--		mount("tmpfs", "/tmp/shm", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOATIME,
-+		mkdir("/userdisk/miwifi/tmp/shm", 01777);
-+		mount("tmpfs", "/userdisk/miwifi/tmp/shm", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOATIME,
- 				"mode=01777");
- 	}
--	mkdir("/tmp/run", 0755);
--	mkdir("/tmp/lock", 0755);
--	mkdir("/tmp/state", 0755);
-+	mkdir("/userdisk/miwifi/tmp/run", 0755);
-+	mkdir("/userdisk/miwifi/tmp/lock", 0755);
-+	mkdir("/userdisk/miwifi/tmp/state", 0755);
- 	umask(oldumask);
- }
- 
-diff --git a/initd/init.c b/initd/init.c
-index 0349e6e..00a57c5 100644
---- a/initd/init.c
-+++ b/initd/init.c
-@@ -84,7 +84,7 @@ main(int argc, char **argv)
- 
- 	pid = fork();
- 	if (!pid) {
--		char *kmod[] = { "/sbin/kmodloader", "/etc/modules-boot.d/", NULL };
-+		char *kmod[] = { "/userdisk/miwifi/sbin/kmodloader", "/userdisk/miwifi/etc/modules-boot.d/", NULL };
- 
- 		if (debug < 3)
- 			patch_stdio("/dev/null");
-diff --git a/initd/init.h b/initd/init.h
-index 123e114..f740301 100644
---- a/initd/init.h
-+++ b/initd/init.h
-@@ -19,7 +19,7 @@
- #include "../log.h"
- 
- #ifndef EARLY_PATH
--#define EARLY_PATH "/usr/sbin:/sbin:/usr/bin:/bin"
-+#define EARLY_PATH "/userdisk/miwifi/usr/sbin:/userdisk/miwifi/sbin:/userdisk/miwifi/usr/bin:/userdisk/miwifi/bin"
- #endif
- 
- void preinit(void);
-diff --git a/initd/preinit.c b/initd/preinit.c
-index fbb36df..5218ae2 100644
---- a/initd/preinit.c
-+++ b/initd/preinit.c
-@@ -36,7 +36,7 @@ static struct uloop_process plugd_proc;
- static void
- check_dbglvl(void)
- {
--	FILE *fp = fopen("/tmp/debug_level", "r");
-+	FILE *fp = fopen("/userdisk/miwifi/tmp/debug_level", "r");
- 	int lvl = 0;
- 
- 	if (!fp)
-@@ -44,7 +44,7 @@ check_dbglvl(void)
- 	if (fscanf(fp, "%d", &lvl) == EOF)
- 		ERROR("failed to read debug level: %m\n");
- 	fclose(fp);
--	unlink("/tmp/debug_level");
-+	unlink("/userdisk/miwifi/tmp/debug_level");
- 
- 	if (lvl > 0 && lvl < 5)
- 		debug = lvl;
-@@ -56,10 +56,10 @@ check_sysupgrade(void)
- 	char *prefix = NULL, *path = NULL, *command = NULL;
- 	size_t n;
- 
--	if (chdir("/"))
-+	if (chdir("/userdisk/miwifi"))
- 		return;
- 
--	FILE *sysupgrade = fopen("/tmp/sysupgrade", "r");
-+	FILE *sysupgrade = fopen("/userdisk/miwifi/tmp/sysupgrade", "r");
- 	if (!sysupgrade)
- 		return;
- 
-@@ -99,7 +99,7 @@ spawn_procd(struct uloop_process *proc, int ret)
- 
- 	unsetenv("INITRAMFS");
- 	unsetenv("PREINIT");
--	unlink("/tmp/.preinit");
-+	unlink("/userdisk/miwifi/tmp/.preinit");
- 
- 	check_sysupgrade();
- 
-@@ -124,8 +124,8 @@ plugd_proc_cb(struct uloop_process *proc, int ret)
- void
- preinit(void)
- {
--	char *init[] = { "/bin/sh", "/etc/preinit", NULL };
--	char *plug[] = { "/sbin/procd", "-h", "/etc/hotplug-preinit.json", NULL };
-+	char *init[] = { "/userdisk/miwifi/bin/sh", "/userdisk/miwifi/etc/preinit", NULL };
-+	char *plug[] = { "/userdisk/miwifi/sbin/procd", "-h", "/userdisk/miwifi/etc/hotplug-preinit.json", NULL };
- 	int fd;
- 
- 	LOG("- preinit -\n");
-@@ -145,7 +145,7 @@ preinit(void)
- 
- 	setenv("PREINIT", "1", 1);
- 
--	fd = creat("/tmp/.preinit", 0600);
-+	fd = creat("/userdisk/miwifi/tmp/.preinit", 0600);
- 
- 	if (fd < 0)
- 		ERROR("Failed to create sentinel file: %m\n");
-diff --git a/initd/zram.c b/initd/zram.c
-index b41bfd9..9334a9a 100644
---- a/initd/zram.c
-+++ b/initd/zram.c
-@@ -53,7 +53,7 @@ static int
- early_insmod(char *module)
- {
- 	pid_t pid = fork();
--	char *modprobe[] = { "/sbin/modprobe", NULL, NULL };
-+	char *modprobe[] = { "/userdisk/miwifi/sbin/modprobe", NULL, NULL };
- 
- 	if (!pid) {
- 		char *path;
-@@ -82,7 +82,7 @@ early_insmod(char *module)
- int
- mount_zram_on_tmp(void)
- {
--	char *mkfs[] = { "/usr/sbin/mkfs.ext4", "-b", "4096", "-F", "-L", "TEMP", "-m", "0", "/dev/zram0", NULL };
-+	char *mkfs[] = { "/userdisk/miwifi/usr/sbin/mkfs.ext4", "-b", "4096", "-F", "-L", "TEMP", "-m", "0", "/dev/zram0", NULL };
- 	FILE *fp;
- 	long zramsize;
- 	pid_t pid;
-@@ -116,17 +116,17 @@ mount_zram_on_tmp(void)
- 		waitpid(pid, NULL, 0);
- 	}
- 
--	ret = mount("/dev/zram0", "/tmp", "ext4", MS_NOSUID | MS_NODEV | MS_NOATIME, "errors=continue,noquota");
-+	ret = mount("/dev/zram0", "/userdisk/miwifi/tmp", "ext4", MS_NOSUID | MS_NODEV | MS_NOATIME, "errors=continue,noquota");
- 	if (ret < 0) {
--		ERROR("Can't mount /dev/zram0 on /tmp: %m\n");
-+		ERROR("Can't mount /dev/zram0 on /userdisk/miwifi/tmp: %m\n");
- 		return errno;
- 	}
- 
- 	LOG("Using up to %ld kB of RAM as ZRAM storage on /mnt\n", zramsize);
- 
--	ret = chmod("/tmp", 01777);
-+	ret = chmod("/userdisk/miwifi/tmp", 01777);
- 	if (ret < 0) {
--		ERROR("Can't set /tmp mode to 1777: %m\n");
-+		ERROR("Can't set /userdisk/miwifi/tmp mode to 1777: %m\n");
- 		return errno;
- 	}
- 
-diff --git a/inittab.c b/inittab.c
-index 55554b9..7ff7a91 100644
 --- a/inittab.c
 +++ b/inittab.c
 @@ -65,8 +65,8 @@ struct init_action {
@@ -183,11 +11,9 @@ index 55554b9..7ff7a91 100644
  
  static LIST_HEAD(actions);
  
-diff --git a/jail/elf.c b/jail/elf.c
-index 7c6076a..9dbc8a1 100644
 --- a/jail/elf.c
 +++ b/jail/elf.c
-@@ -310,8 +310,8 @@ static void load_ldso_conf(const char *conf)
+@@ -310,8 +310,8 @@ static void load_ldso_conf(const char *c
  void init_library_search(void)
  {
  	avl_init(&libraries, avl_strcmp, false, NULL);
@@ -200,11 +26,9 @@ index 7c6076a..9dbc8a1 100644
 +	alloc_library_path("/userdisk/miwifi/usr/lib");
 +	load_ldso_conf("/userdisk/miwifi/etc/ld.so.conf");
  }
-diff --git a/jail/jail.c b/jail/jail.c
-index 54e7841..39f19e2 100644
 --- a/jail/jail.c
 +++ b/jail/jail.c
-@@ -124,7 +124,7 @@ int mount_bind(const char *root, const char *path, int readonly, int error)
+@@ -124,7 +124,7 @@ int mount_bind(const char *root, const c
  
  static int build_jail_fs(void)
  {
@@ -222,24 +46,9 @@ index 54e7841..39f19e2 100644
  	int ch, i;
  
  	if (uid) {
-diff --git a/plug/coldplug.c b/plug/coldplug.c
-index c6a89c3..32031c6 100644
---- a/plug/coldplug.c
-+++ b/plug/coldplug.c
-@@ -46,7 +46,7 @@ void procd_coldplug(void)
- 	umount2("/dev/pts", MNT_DETACH);
- 	umount2("/dev/", MNT_DETACH);
- 	mount("tmpfs", "/dev", "tmpfs", MS_NOSUID, "mode=0755,size=512K");
--	ignore(symlink("/tmp/shm", "/dev/shm"));
-+	ignore(symlink("/userdisk/miwifi/tmp/shm", "/dev/shm"));
- 	mkdir("/dev/pts", 0755);
- 	umask(oldumask);
- 	mount("devpts", "/dev/pts", "devpts", MS_NOEXEC | MS_NOSUID, 0);
-diff --git a/rcS.c b/rcS.c
-index c2e1abb..6f7eed2 100644
 --- a/rcS.c
 +++ b/rcS.c
-@@ -184,12 +184,12 @@ int rcS(char *pattern, char *param, void (*q_empty)(struct runqueue *))
+@@ -184,12 +184,12 @@ int rcS(char *pattern, char *param, void
  	q.empty_cb = q_empty;
  	q.max_running_tasks = 1;
  
@@ -254,11 +63,9 @@ index c2e1abb..6f7eed2 100644
  }
  
  static void r_empty(struct runqueue *q)
-diff --git a/service/instance.c b/service/instance.c
-index 917b003..bdbb1dd 100644
 --- a/service/instance.c
 +++ b/service/instance.c
-@@ -187,7 +187,7 @@ jail_run(struct service_instance *in, char **argv)
+@@ -187,7 +187,7 @@ jail_run(struct service_instance *in, ch
  	struct jail *jail = &in->jail;
  	int argc = 0;
  
@@ -267,7 +74,7 @@ index 917b003..bdbb1dd 100644
  
  	if (jail->name) {
  		argv[argc++] = "-n";
-@@ -298,7 +298,7 @@ instance_run(struct service_instance *in, int _stdout, int _stderr)
+@@ -298,7 +298,7 @@ instance_run(struct service_instance *in
  		setenv("SECCOMP_FILE", in->seccomp, 1);
  
  	if (setlbf)
@@ -276,7 +83,7 @@ index 917b003..bdbb1dd 100644
  
  	blobmsg_list_for_each(&in->limits, var)
  		instance_limits(blobmsg_name(var->data), blobmsg_data(var->data));
-@@ -311,9 +311,9 @@ instance_run(struct service_instance *in, int _stdout, int _stderr)
+@@ -311,9 +311,9 @@ instance_run(struct service_instance *in
  
  #ifdef SECCOMP_SUPPORT
  	if (in->trace)
@@ -288,7 +95,7 @@ index 917b003..bdbb1dd 100644
  #else
  	if (in->trace || seccomp)
  		ULOG_WARN("Seccomp support for %s::%s not available\n", in->srv->name, in->name);
-@@ -743,7 +743,7 @@ instance_jail_parse(struct service_instance *in, struct blob_attr *attr)
+@@ -743,7 +743,7 @@ instance_jail_parse(struct service_insta
  	struct jail *jail = &in->jail;
  	struct stat s;
  
@@ -297,8 +104,6 @@ index 917b003..bdbb1dd 100644
  		return 0;
  
  	blobmsg_parse(jail_attr, __JAIL_ATTR_MAX, tb,
-diff --git a/state.c b/state.c
-index ccf4104..116ffe6 100644
 --- a/state.c
 +++ b/state.c
 @@ -95,13 +95,13 @@ static void set_console(void)
@@ -317,11 +122,9 @@ index ccf4104..116ffe6 100644
  		procd_coldplug();
  		break;
  
-diff --git a/system.c b/system.c
-index 151f613..7b22163 100644
 --- a/system.c
 +++ b/system.c
-@@ -80,7 +80,7 @@ static int system_board(struct ubus_context *ctx, struct ubus_object *obj,
+@@ -80,7 +80,7 @@ static int system_board(struct ubus_cont
  		fclose(f);
  	}
  
@@ -330,7 +133,7 @@ index 151f613..7b22163 100644
  	    (f = fopen("/proc/device-tree/model", "r")) != NULL)
  	{
  		if (fgets(line, sizeof(line), f))
-@@ -114,7 +114,7 @@ static int system_board(struct ubus_context *ctx, struct ubus_object *obj,
+@@ -114,7 +114,7 @@ static int system_board(struct ubus_cont
  		fclose(f);
  	}
  
@@ -339,7 +142,7 @@ index 151f613..7b22163 100644
  	{
  		if (fgets(line, sizeof(line), f))
  		{
-@@ -148,7 +148,7 @@ static int system_board(struct ubus_context *ctx, struct ubus_object *obj,
+@@ -148,7 +148,7 @@ static int system_board(struct ubus_cont
  		fclose(f);
  	}
  
@@ -348,8 +151,6 @@ index 151f613..7b22163 100644
  	{
  		c = blobmsg_open_table(&b, "release");
  
-diff --git a/sysupgrade.c b/sysupgrade.c
-index 07e33f7..a81e481 100644
 --- a/sysupgrade.c
 +++ b/sysupgrade.c
 @@ -25,7 +25,7 @@
@@ -361,11 +162,9 @@ index 07e33f7..a81e481 100644
  	int ret;
  
  	ret = chroot(prefix);
-diff --git a/trace/trace.c b/trace/trace.c
-index 27cf108..928b7ab 100644
 --- a/trace/trace.c
 +++ b/trace/trace.c
-@@ -311,11 +311,11 @@ int main(int argc, char **argv, char **envp)
+@@ -311,11 +311,11 @@ int main(int argc, char **argv, char **e
  		_envp = calloc(envc + 2, sizeof(char *));
  		switch (mode) {
  		case UTRACE:
@@ -379,7 +178,7 @@ index 27cf108..928b7ab 100644
  			newenv = 2;
  			if (asprintf(&_envp[1], "SECCOMP_FILE=%s", json ? json : "") < 0)
  				ULOG_ERR("failed to allocate SECCOMP_FILE env: %m\n");
-@@ -381,13 +381,13 @@ int main(int argc, char **argv, char **envp)
+@@ -381,13 +381,13 @@ int main(int argc, char **argv, char **e
  	switch (mode) {
  	case UTRACE:
  		if (!json)
@@ -395,16 +194,3 @@ index 27cf108..928b7ab 100644
  			ULOG_ERR("failed to allocate violations output path: %m\n");
  		break;
  	}
-diff --git a/upgraded/upgraded.c b/upgraded/upgraded.c
-index 0b82f20..587aa6c 100644
---- a/upgraded/upgraded.c
-+++ b/upgraded/upgraded.c
-@@ -43,7 +43,7 @@ static void upgrade_proc_cb(struct uloop_process *proc, int ret)
- 
- static void sysupgrade(char *path, char *command)
- {
--	char *args[] = { "/lib/upgrade/stage2", path, command, NULL };
-+	char *args[] = { "/userdisk/miwifi/lib/upgrade/stage2", path, command, NULL };
- 
- 	upgrade_proc.cb = upgrade_proc_cb;
- 	upgrade_proc.pid = fork();

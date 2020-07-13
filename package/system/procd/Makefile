@@ -89,6 +89,7 @@ endif
 
 SECCOMP=$(if $(CONFIG_PACKAGE_procd-seccomp),1,0)
 CMAKE_OPTIONS += -DSECCOMP_SUPPORT=$(SECCOMP) -DUTRACE_SUPPORT=$(SECCOMP)
+CMAKE_OPTIONS += -DDISABLE_INIT=1
 
 define Package/procd/install
 	$(INSTALL_DIR) $(1)/sbin $(1)/etc $(1)/lib/functions
