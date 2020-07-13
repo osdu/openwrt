@@ -1,0 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 471b38e..05ee14f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -7,7 +7,7 @@ OPTION(BUILD_LUA "build Lua plugin" ON)
+ OPTION(BUILD_EXAMPLES "build examples" ON)
+ 
+ SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+-SET(UBUS_UNIX_SOCKET "/var/run/ubus.sock")
++SET(UBUS_UNIX_SOCKET "/userdisk/miwifi/var/run/ubus.sock")
+ SET(UBUS_MAX_MSGLEN 1048576)
+ 
+ ADD_DEFINITIONS( -DUBUS_UNIX_SOCKET="${UBUS_UNIX_SOCKET}")
+diff --git a/ubusd_acl.c b/ubusd_acl.c
+index 6257f81..9f7ea41 100644
+--- a/ubusd_acl.c
++++ b/ubusd_acl.c
+@@ -67,7 +67,7 @@ struct ubusd_acl_file {
+ 	int ok;
+ };
+ 
+-const char *ubusd_acl_dir = "/usr/share/acl.d";
++const char *ubusd_acl_dir = "/userdisk/miwifi/usr/share/acl.d";
+ static struct blob_buf bbuf;
+ static struct avl_tree ubusd_acls;
+ static int ubusd_acl_seq;
