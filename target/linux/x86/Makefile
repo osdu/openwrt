@@ -12,6 +12,7 @@ BOARDNAME:=x86
 FEATURES:=squashfs ext4 vdi vmdk pcmcia targz fpu
 SUBTARGETS:=generic legacy geode 64
 MAINTAINER:=Felix Fietkau <nbd@nbd.name>
+DEFAULT_SUBTARGET ?= 64
 
 KERNEL_PATCHVER:=4.14
 

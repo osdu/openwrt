@@ -79,8 +79,8 @@ pkg_appears_sane() {
 ###
 ogargs=""
 noclean=0
-usage="Usage: $0 [-c] [-C] [-o owner] [-g group] <pkg_directory> [<destination_directory>]"
-while getopts "cg:ho:v" opt; do
+usage="Usage: $0 [-c] [-C] [-o owner] [-g group] [-t timestamp] <pkg_directory> [<destination_directory>]"
+while getopts "cg:ho:t:v" opt; do
     case $opt in
 	o ) owner=$OPTARG
 	    ogargs="--owner=$owner"
@@ -88,6 +88,7 @@ while getopts "cg:ho:v" opt; do
 	g ) group=$OPTARG
 	    ogargs="$ogargs --group=$group"
 	    ;;
+	t ) TIMESTAMP=$OPTARG;;
 	c ) ;;
 	C ) noclean=1;;
 	v ) echo $version
@@ -115,7 +116,7 @@ case $# in
 	;;
 *)
 	echo $usage >&2
-	exit 1 
+	exit 1
 	;;
 esac
 
@@ -140,27 +141,27 @@ if ! pkg_appears_sane $pkg_dir; then
 	exit 1
 fi
 
-tmp_dir=$dest_dir/IPKG_BUILD.$$
-mkdir $tmp_dir
+tmp_dir=/tmp/IPKG_BUILD.$$
+mkdir -p $tmp_dir
 
 echo $CONTROL > $tmp_dir/tarX
 # Preserve permissions (-p) when creating data.tar.gz as non-root user
-( cd $pkg_dir && $TAR $ogargs -X $tmp_dir/tarX --format=gnu --sort=name -cpf -  --mtime="$TIMESTAMP" . | $GZIP -n - > $tmp_dir/data.tar.gz )
+( cd $pkg_dir && $TAR $ogargs -X $tmp_dir/tarX --format=gnu --sort=name -cpf -  --mtime="$TIMESTAMP" * | $GZIP -n - > $tmp_dir/data.tar.gz )
 
 installed_size=`stat -c "%s" $tmp_dir/data.tar.gz`
 sed -i -e "s/^Installed-Size: .*/Installed-Size: $installed_size/" \
 	$pkg_dir/$CONTROL/control
 
-( cd $pkg_dir/$CONTROL && $TAR $ogargs --format=gnu --sort=name -cf -  --mtime="$TIMESTAMP" . | $GZIP -n - > $tmp_dir/control.tar.gz )
+( cd $pkg_dir/$CONTROL && $TAR $ogargs --format=gnu --sort=name -cf -  --mtime="$TIMESTAMP" * | $GZIP -n - > $tmp_dir/control.tar.gz )
 rm $tmp_dir/tarX
 
 echo "2.0" > $tmp_dir/debian-binary
 
 pkg_file=$dest_dir/${pkg}_${version}_${arch}.ipk
 rm -f $pkg_file
-( cd $tmp_dir && $TAR $ogargs --format=gnu --sort=name -cf -  --mtime="$TIMESTAMP" ./debian-binary ./data.tar.gz ./control.tar.gz | $GZIP -n - > $pkg_file )
+( cd $tmp_dir && $TAR $ogargs --format=gnu --sort=name -cf -  --mtime="$TIMESTAMP" debian-binary control.tar.gz data.tar.gz | $GZIP -n - > $pkg_file )
 
 rm $tmp_dir/debian-binary $tmp_dir/data.tar.gz $tmp_dir/control.tar.gz
 rmdir $tmp_dir
 
-echo "Packaged contents of $pkg_dir into $pkg_file"
+echo "> Packaged contents of `basename $pkg_dir` ==> $pkg_file"
