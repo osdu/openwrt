@@ -30,6 +30,8 @@ system_config() {
 	[ -n "$zonename" ] && [ -f "/usr/share/zoneinfo/$zonename" ] && \
 		ln -sf "/usr/share/zoneinfo/$zonename" /tmp/localtime && rm -f /tmp/TZ
 
+	# fix TZ for libc
+	echo "$timezone" > /tmp/TZ
 	# apply timezone to kernel
 	date -k
 }
