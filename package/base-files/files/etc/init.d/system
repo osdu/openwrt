@@ -32,6 +32,7 @@ system_config() {
 
 	# fix TZ for libc
 	echo "$timezone" > /tmp/TZ
+
 	# apply timezone to kernel
 	date -k
 }
